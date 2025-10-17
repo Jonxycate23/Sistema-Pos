@@ -88,25 +88,6 @@ export function PantallaIngresoSalidaDinero() {
           : "RETIRAR DINERO DE CAJA"}
       </span>
       
-      <section className="areatipopago">
-        {dataMetodosPago
-          ?.filter((item) => item.nombre !== "Mixto")
-          .map((item, index) => {
-            return (
-              <article className="box" key={index}>
-                <Btn1
-                  imagen={item.icono != "-" ? item.icono : null}
-                  titulo={item.nombre}
-                  border="0"
-                  height="70px"
-                  width="100%"
-                  funcion={() => handleMetodoClick(item)}
-                  bgcolor={item.id === selectedMetodo?.id ? "#FFD700" : "#FFF"}
-                />
-              </article>
-            );
-          })}
-      </section>
       <form onSubmit={handleSubmit(manejadorEnvio)}>
         <section className="area1">
           <span>Monto:</span>

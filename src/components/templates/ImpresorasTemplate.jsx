@@ -146,20 +146,21 @@ export const ImpresorasTemplate = () => {
             />
           </ContentSwich>
 
-          <Avatar $bg="#d70e79">
+          <Avatar $bg="#4dd332">
             {statePrintDirecto ? (
               <>
-                <Btn1 funcion={probarTicket} bgcolor={"#d70e79"} color={"#fff"} titulo={"probar"} />
+                <Btn1 funcion={probarTicket} bgcolor={"#ffb300"} color={"#000000"} titulo={"probar"} />
                 <SelectList
                   itemSelect={selectImpresora}
                   onSelect={setSelectImpresora}
                   data={dataImpresorasLocales}
                   displayField="name"
+                  bgcolor= {"#fff"}
                 />
                 <Btn1
                   funcion={doEditar}
                   disabled={isPending}
-                  bgcolor={"#fff"}
+                  bgcolor={"#375cf2"}
                   titulo={"Guardar"}
                 />
               </>
@@ -175,14 +176,14 @@ export const ImpresorasTemplate = () => {
         <SubContainer>
           <Title>IMPRESORAS</Title>
           <SubTitle>Aun no tienes impresoras</SubTitle>
-          <Avatar $bg="#1424a0">
+          <Avatar $bg="#f79736">
             <Btn1
               funcion={() =>
                 descargarArchivo(
-                  //"https://drive.google.com/file/d/1v5Q632tEWx8yTlfnC4HYT6SsGKnORduw/view?usp=sharing"
+                  "https://drive.google.com/file/d/1dyAEvoqii2YtzfBx3Fa_xaY_C2sizrWA/view?usp=drive_link"
                 )
               }
-              titulo={"descargar"}
+              titulo={"Descargar Archivo"}
             />
             <span className="nombre"></span>
           </Avatar>
@@ -264,7 +265,7 @@ const Avatar = styled.div`
   .anuncio {
     text-align: center;
     font-weight: bold;
-    color: #fff;
+    color: #000000;
   }
   background-color: ${(props) => props.$bg};
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='0.19' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");

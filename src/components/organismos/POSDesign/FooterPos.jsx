@@ -78,7 +78,7 @@ export function FooterPos() {
 }
 const Footer = styled.section`
   grid-area: footer;
-  /* background-color: rgba(57, 231, 26, 0.5); */
+  /* background-color: rgba(26, 163, 231, 0.5); */
   display: none;
 
   @media ${Device.desktop} {

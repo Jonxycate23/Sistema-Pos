@@ -1,157 +1,77 @@
-import { numeroALetras, urlToBase64 } from "../utils/Conversiones";
+import { urlToBase64 } from "../utils/Conversiones";
 import createPdf from "../utils/CreatePdf";
+
 const TicketVenta = async (output, data) => {
   const fechaCompleta = data.dataventas?.fecha;
   const fechaObj = new Date(fechaCompleta);
-  const simboloMoneda = data.dataempresa?.simbolo_moneda;
-  const textoTotal = numeroALetras(
-    data.dataventas?.monto_total,
-    data.dataempresa?.nombre_moneda
-  );
-  const fecha = fechaObj.toLocaleDateString("es-PE", {
+  const simboloMoneda = data.dataempresa?.simbolo_moneda || "Q";
+
+  const fecha = fechaObj.toLocaleDateString("es-GT", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
-  const hora = fechaObj.toLocaleTimeString("es-PE", {
+  const hora = fechaObj.toLocaleTimeString("es-GT", {
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
   });
+
+  // ✅ Cargar logo (local o remoto)
   const logoempresa = await urlToBase64(
-    data.dataempresa?.logo === "-"
-      ? "https://i.ibb.co/TxhZ45j7/bride.png"
+    data.dataempresa?.logo === "-" || !data.dataempresa?.logo
+      ? "/pos-ventas-18-06-2025/public/CVLOGO.png" // usa el PNG sin fondo
       : data.dataempresa?.logo
   );
+
+  // ✅ Datos de pago
+  const metodoPago = data.metodosPago?.[0] || {};
+  const tipoPago = metodoPago.tipo || "Efectivo";
+  const montoRecibido = Number(metodoPago.monto || 0);
+  const vuelto = Number(metodoPago.vuelto || 0);
+  const total = Number(data.dataventas?.monto_total || 0);
+
+  // ✅ Tabla de productos
   const productTableBody = [
     [
-      { text: "CÓDIGO - DESCRIPCIÓN", colSpan: 4, style: "tProductsHeader" },
-      {},
-      {},
-      {},
-    ],
-    [
-      { text: "CANT.", style: "tProductsHeader" },
+      { text: "Descripción", style: "tProductsHeader" },
+      { text: "Cant.", style: "tProductsHeader", alignment: "center" },
       { text: "UM", style: "tProductsHeader", alignment: "center" },
-      { text: "PRECIO", style: "tProductsHeader", alignment: "right" },
-      { text: "TOTAL", style: "tProductsHeader", alignment: "right" },
+      { text: "Precio", style: "tProductsHeader", alignment: "right" },
+      { text: "Total", style: "tProductsHeader", alignment: "right" },
     ],
-    ...data.productos.flatMap((item) => [
-      [
-        {
-          text: `${item.productos?.codigo_barras} - ${item.productos.nombre}`,
-          style: "tProductsBody",
-          colSpan: 4,
-        },
-        {},
-        {},
-        {},
-      ],
-      [
-        { text: item.cantidad, style: "tProductsBody", alignment: "center" },
-        { text: "unidad", style: "tProductsBody", alignment: "center" },
-        {
-          text: item.precio_venta,
-          style: "tProductsBody",
-          alignment: "right",
-        },
-        { text: item.total, style: "tProductsBody", alignment: "right" },
-      ],
+    ...data.productos.map((item) => [
+      {
+        text: `${item.productos?.codigo_barras || ""} - ${item.productos?.nombre || ""}`,
+        style: "tProductsBody",
+      },
+      { text: item?.cantidad?.toString() || "0", style: "tProductsBody", alignment: "center" },
+      { text: item?.unidad_medida || "unidad", style: "tProductsBody", alignment: "center" },
+      { text: `${simboloMoneda} ${Number(item?.precio_venta || 0).toFixed(2)}`, style: "tProductsBody", alignment: "right" },
+      { text: `${simboloMoneda} ${Number(item?.total || 0).toFixed(2)}`, style: "tProductsBody", alignment: "right" },
     ]),
   ];
-  const formasPagoTableBody = [
-    [
-      {
-        text: "FORMA DE PAGO:",
-        style: "tTotals",
-        alignment: "right",
-        colSpan: 4,
-        margin: [0, 4, 0, 0],
-      },
-      {},
-      {},
-      {},
-    ],
-    ...data.metodosPago?.flatMap((item) =>
-      item.tipo === "Efectivo"
-        ? [
-            [
-              {
-                text: `${item.tipo}: ${simboloMoneda}`,
-                style: "tTotals",
-                colSpan: 2,
-                border: [false, false, false, true],
-              },
-              {},
-              {
-                text: item.monto,
-                style: "tTotals",
-                colSpan: 2,
-                border: [false, false, false, true],
-              },
-              {},
-            ],
-            [
-              { text: " ", colSpan: 2, border: [false, false, false, false] },
-              {},
-              {
-                text: `Vuelto: ${simboloMoneda} ${item.vuelto}`,
-                style: "tProductsBody",
-                colSpan: 2,
-                alignment: "right",
-                margin: [0, 0, 0, 0],
-              },
-              {},
-            ],
-          ]
-        : [
-            [
-              {
-                text: `${item.tipo}: ${simboloMoneda}`,
-                style: "tTotals",
-                colSpan: 2,
-              },
-              {},
-              { text: item.monto, style: "tTotals", colSpan: 2 },
-              {},
-            ],
-          ]
-    ),
-  ];
 
+  // ✅ Contenido del ticket
   const content = [
-    //DATA EMPRESA
+    { text: " ", margin: [0, 25] },
+
+    // LOGO (sin borde ni fondo circular)
     {
-      image: logoempresa, //logo
-      fit: [141.73, 56.692],
+      image: logoempresa,
+      width: 100,
       alignment: "center",
-    },
-    {
-      text: data.dataempresa?.nombre,
-      style: "header",
-      margin: [0, 10, 0, 0],
-    },
-    {
-      text: data.dataempresa?.direccion_fiscal,
-      style: "header",
-    },
-    {
-      text: data.dataempresa?.id_fiscal,
-      style: "header",
+      margin: [0, 0, 0, 10],
     },
 
-    //TIPO Y NUMERO DOCUMENTO
-    { text: data.nombreComprobante, style: "header", margin: [0, 10, 0, 2.25] },
-    {
-      text: data.dataventas?.nro_comprobante,
-      style: "header",
-      margin: [0, 2.25, 0, 0],
-    },
+    // DATOS DE LA EMPRESA
+    { text: data.dataempresa?.nombre, style: "header" },
+    { text: data.dataempresa?.direccion_fiscal, style: "header" },
+    { text: data.dataempresa?.id_fiscal, style: "header" },
+    { text: data.nombreComprobante, style: "header", margin: [0, 10, 0, 2] },
+    { text: data.dataventas?.nro_comprobante, style: "header", margin: [0, 0, 0, 10] },
 
-    //DATOS CEBECERA FACTURAR
-
+    // DATOS GENERALES
     {
-      margin: [0, 10, 0, 0],
       table: {
         widths: ["25%", "35%", "15%", "25%"],
         body: [
@@ -167,217 +87,128 @@ const TicketVenta = async (output, data) => {
             {},
             {},
           ],
-
-          //DATOS CLIENTE
           [
-            {
-              text: "CLIENTE: ",
-              style: "tTotals",
-              alignment: "left",
-              colSpan: 4,
-              margin: [0, 6, 0, 0],
-            },
-            {},
+            { text: "CLIENTE:", style: "tHeaderLabel" },
+            { text: data.dataCliente?.nombres || "Genérico", style: "tHeaderValue", colSpan: 3 },
             {},
             {},
           ],
           [
-            { text: "NOMBRES: ", style: "tClientLabel" },
-            {
-              text: data.dataCliente?.nombres || "Generico",
-              style: "tClientValue",
-              colSpan: 3,
-            },
-            {},
-            {},
-          ],
-          [
-            { text: "DOC.ID: ", style: "tClientLabel" },
-            {
-              text: data.dataCliente?.identificador_fiscal || "-",
-              style: "tClientValue",
-              colSpan: 3,
-            },
-            {},
-            {},
-          ],
-          [
-            { text: "DIRECC.: ", style: "tClientLabel" },
-            {
-              text: data.dataCliente?.direccion || "-",
-              style: "tClientValue",
-              colSpan: 3,
-            },
+            { text: "DPI:", style: "tHeaderLabel" },
+            { text: data.dataCliente?.identificador_fiscal || "-", style: "tHeaderValue", colSpan: 3 },
             {},
             {},
           ],
         ],
       },
       layout: "noBorders",
+      margin: [0, 5, 0, 10],
     },
-    //TABLA PRODUCTOS
+
+    // TABLA PRODUCTOS
     {
-      margin: [0, 10, 0, 0],
       table: {
-        widths: ["20%", "20%", "30%", "30%"],
-        headerRows: 2,
+        widths: ["35%", "10%", "10%", "20%", "25%"],
         body: productTableBody,
       },
       layout: {
-        hLineWidth: function (i, node) {
-          return i == 2 ? 0.5 : 0;
-        },
-        vLineWidth: function (i, node) {
-          return 0;
-        },
-        hLineColor: function () {
-          return "#a9a9a9";
-        },
+        hLineWidth: () => 0.5,
+        vLineWidth: () => 0,
+        hLineColor: () => "#a9a9a9",
       },
+      margin: [0, 10, 0, 10],
     },
-    //TOTALES
+
+    // TOTALES
     {
-      margin: [0, 10, 0, 0],
       table: {
-        widths: ["25%", "35%", "15%", "25%"],
+        widths: ["60%", "40%"],
         body: [
-          //TOTAL
           [
-            {
-              text: `SUBTOTAL: ${simboloMoneda}`,
-              style: "tTotals",
-              colSpan: 2,
-            },
-            {},
-            { text: data.dataventas?.sub_total, style: "tTotals", colSpan: 2 },
-            {},
+            { text: "Subtotal:", style: "tTotals", alignment: "right" },
+            { text: `${simboloMoneda} ${Number(data.dataventas?.sub_total || 0).toFixed(2)}`, style: "tTotals" },
           ],
           [
-            {
-              text: `${data.dataempresa?.impuesto}: ${simboloMoneda}`,
-              style: "tTotals",
-              colSpan: 2,
-            },
-            {},
-            {
-              text: data.dataventas?.total_impuestos,
-              style: "tTotals",
-              colSpan: 2,
-            },
-            {},
+            { text: "IVA (Incluido):", style: "tTotals", alignment: "right" },
+            { text: `${simboloMoneda} ${Number(data.dataventas?.total_impuestos || 0).toFixed(2)}`, style: "tTotals" },
           ],
           [
-            { text: `TOTAL: ${simboloMoneda}`, style: "tTotals", colSpan: 2 },
-            {},
-            { text: data.dataventas.monto_total, style: "tTotals", colSpan: 2 },
-            {},
+            { text: "TOTAL:", style: "tTotalsBig", alignment: "right" },
+            { text: `${simboloMoneda} ${total.toFixed(2)}`, style: "tTotalsBig" },
           ],
-          //TOTAL IMPORTE EN LETRAS
-          [
-            {
-              text: "IMPORTE EN LETRAS:",
-              style: "tTotals",
-              alignment: "left",
-              colSpan: 4,
-              margin: [0, 4, 0, 0],
-            },
-            {},
-            {},
-            {},
-          ],
-          [
-            {
-              text: textoTotal,
-              style: "tProductsBody",
-              colSpan: 4,
-            },
-            {},
-            {},
-            {},
-          ],
-          ...formasPagoTableBody,
-          //FORMAS DE PAGO
         ],
       },
       layout: "noBorders",
+      margin: [0, 10, 0, 5],
     },
-    //NOTA DE PIE
+
+    // FORMA DE PAGO Y VUELTO
     {
-      text: data.dataempresa?.pie_pagina_ticket,
-      style: "header",
+      table: {
+        widths: ["50%", "50%"],
+        body: [
+          [
+            { text: "Forma de pago:", style: "tTotals", alignment: "right" },
+            { text: `${tipoPago} (${simboloMoneda} ${total.toFixed(2)})`, style: "tTotals", alignment: "left" },
+          ],
+          [
+            { text: "Monto recibido:", style: "tTotals", alignment: "right" },
+            { text: `${simboloMoneda} ${montoRecibido.toFixed(2)}`, style: "tTotals", alignment: "left" },
+          ],
+          [
+            { text: "Vuelto:", style: "tTotals", alignment: "right" },
+            { text: `${simboloMoneda} ${vuelto.toFixed(2)}`, style: "tTotals", alignment: "left" },
+          ],
+        ],
+      },
+      layout: "noBorders",
+      margin: [0, 5, 0, 15],
+    },
+
+    // QR + PIE
+    {
+      qr: `${data.dataempresa?.id_fiscal}|${data.dataventas?.nro_comprobante}|${data.dataventas.monto_total}|${fecha}${hora}`,
+      fit: 110,
       alignment: "center",
-      margin: [0, 5],
+      eccLevel: "Q",
+      margin: [0, 10, 0, 4],
     },
-    //QR FACTURA
     {
-      stack: [
-        {
-          qr: `${data.dataempresa?.id_fiscal}|${data.dataventas?.nro_comprobante}|${data.dataventas.monto_total}|${data.dataventas?.sub_total}|${data.dataventas?.total_impuestos}|${fecha}${hora}|`,
-          fit: 115,
-          alignment: "center",
-          eccLevel: "Q",
-          margin: [0, 10, 0, 3],
-        },
-        {
-          text: "Representación impresa del comprobante original. Consulta tu comprobante aquí:",
-          style: "text",
-        },
-        {
-          text: "https://codigo369web.com/",
-          link: "https://codigo369web.com/",
-          style: "link",
-        },
-      ],
+      text: "Consulta tu factura digital aquí:",
+      style: "text",
+      alignment: "center",
     },
+    {
+      text: "Escanea el QR",
+      style: "text",
+      alignment: "center",
+    },
+    {
+      text: "Representación del comprobante original.",
+      style: "footer",
+      alignment: "center",
+      margin: [0, 8],
+    },
+
+    { text: " ", margin: [0, 15] },
   ];
 
-  //estilos
+  // ✅ Estilos
   const styles = {
-    header: {
-      fontSize: 9,
-      bold: true,
-      alignment: "center",
-    },
-    tHeaderLabel: {
-      fontSize: 8,
-      alignment: "right",
-    },
-    tHeaderValue: {
-      fontSize: 8,
-      bold: true,
-    },
-    tProductsHeader: {
-      fontSize: 8.5,
-      bold: true,
-    },
-    tProductsBody: {
-      fontSize: 9,
-    },
-    tTotals: {
-      fontSize: 9,
-      bold: true,
-      alignment: "right",
-    },
-    tClientLabel: {
-      fontSize: 8,
-      alignment: "right",
-    },
-    tClientValue: {
-      fontSize: 8,
-      bold: true,
-    },
-    text: {
-      fontSize: 8,
-      alignment: "center",
-    },
-    link: {
-      fontSize: 8,
-      bold: true,
-      margin: [0, 0, 0, 4],
-      alignment: "center",
-    },
+    header: { fontSize: 9, bold: true, alignment: "center" },
+    tHeaderLabel: { fontSize: 8, alignment: "right" },
+    tHeaderValue: { fontSize: 8, bold: true },
+    tProductsHeader: { fontSize: 8.5, bold: true, fillColor: "#f0f0f0" },
+    tProductsBody: { fontSize: 8, alignment: "left" },
+    tTotals: { fontSize: 9, bold: true },
+    tTotalsBig: { fontSize: 10, bold: true },
+    text: { fontSize: 8 },
+    link: { fontSize: 8, bold: true, color: "#0056b3", alignment: "center" },
+    footer: { fontSize: 7, italics: true },
   };
+
   const response = await createPdf({ content, styles }, output);
   return response;
 };
+
 export default TicketVenta;

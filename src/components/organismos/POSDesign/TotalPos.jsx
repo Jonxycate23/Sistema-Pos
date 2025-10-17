@@ -28,7 +28,7 @@ export function TotalPos() {
   return (
     <Container>
     <section className="imagen">
-        <img src="https://i.ibb.co/HdYgDdp/corazon-2.png" />
+        <img src="https://cdn-icons-png.flaticon.com/512/4564/4564330.png" />
       </section>
       <section className="contentTotal">
         <section className="contentTituloTotal">
@@ -48,9 +48,9 @@ const Container = styled.div`
   border-radius: 15px;
   font-weight: 700;
   font-size: 38px;
-  background-color: #3ff563;
+  background-color: #3fb2f5;
   padding: 10px;
-  color: #207c33;
+  color: #000000;
   position: relative;
   overflow: hidden;
   &::after {
@@ -58,7 +58,7 @@ const Container = styled.div`
     display: block;
     width: 100px;
     height: 100px;
-    background-color: #7fff99;
+    background-color: #3fb2f5;
     position: absolute;
     border-radius: 50%;
     top: -20px;

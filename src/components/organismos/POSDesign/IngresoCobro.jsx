@@ -254,7 +254,7 @@ export const IngresoCobro = forwardRef((props, ref) => {
   return (
     <Container>
       {mutation.isPending ? (
-        <span>guardando...🐖</span>
+        <span>guardando...🌿🌿🌿</span>
       ) : (
         <>
           {mutation.isError && <span>error: {mutation.error.message}</span>}
@@ -354,7 +354,7 @@ export const IngresoCobro = forwardRef((props, ref) => {
               funcion={() => mutation.mutateAsync()}
               border="2px"
               titulo="COBRAR (enter)"
-              bgcolor="#0aca21"
+              bgcolor="#0a87ca"
               color="#ffffff"
               width="100%"
             />
