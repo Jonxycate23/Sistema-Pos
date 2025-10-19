@@ -19,7 +19,7 @@ import { PermisosUser } from "../UsuariosDesign/PermisosUser";
 import { useRolesStore } from "../../../store/RolesStore";
 
 // Import del utilitario para enviar correo
-import { sendUserEmail } from "../../../utils/sendUserEmail";
+import { sendUserEmail } from "../../../../api/send-email";
 
 export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
   const queryClient = useQueryClient();
