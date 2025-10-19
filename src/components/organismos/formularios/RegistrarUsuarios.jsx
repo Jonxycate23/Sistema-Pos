@@ -221,7 +221,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     type="text"
                     {...register("telefono", { required: true })}
                   />
-                  <label classClassName="form__label">Teléfono</label>
+                  <label className="form__label">Teléfono</label>
                   {errors.telefono?.type === "required" && <p>Campo requerido</p>}
                 </InputText>
               </article>
