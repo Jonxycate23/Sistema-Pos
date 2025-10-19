@@ -34,6 +34,7 @@
     "react-router-dom": "^6.22.1",
     "react-spinners": "^0.13.8",
     "recharts": "^2.14.1",
+    "resend": "^6.2.0",
     "scrollreveal": "^4.0.9",
     "sonner": "^1.4.41",
     "styled-components": "^6.1.8",

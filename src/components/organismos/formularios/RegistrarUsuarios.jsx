@@ -17,13 +17,15 @@ import { SelectList } from "../../ui/lists/SelectList";
 import { BarLoader } from "react-spinners";
 import { PermisosUser } from "../UsuariosDesign/PermisosUser";
 import { useRolesStore } from "../../../store/RolesStore";
+
+// Import del utilitario para enviar correo
+import { sendUserEmail } from "../../../utils/sendUserEmail";
+
 export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
   const queryClient = useQueryClient();
   const {
     cajaSelectItem,
- 
     mostrarCajaXSucursal,
-   
   } = useCajasStore();
   const { insertarUsuario, itemSelect, editarUsuarios } = useUsuariosStore();
   const { dataempresa } = useEmpresaStore();
@@ -44,6 +46,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
       mostrarCajaXSucursal({ id_sucursal: sucursalesItemSelect?.id }),
     enabled: !!sucursalesItemSelect,
   });
+
   const {
     register,
     formState: { errors },
@@ -57,6 +60,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
       pass: 123456,
     },
   });
+
   const insertar = async (data) => {
     if (accion === "Editar") {
       const p = {
@@ -65,31 +69,41 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
         nro_doc: data.nro_doc,
         telefono: data.telefono,
         id_rol: rolesItemSelect?.id,
-
-        //datos asignacion caja y sucursal
-       
-        
+        // datos asignación caja y sucursal si aplica…
       };
-      console.log("pEditar",p)
+      console.log("pEditar", p);
       await editarUsuarios(p);
     } else {
       const p = {
-        
         nombres: data.nombres,
         nro_doc: data.nro_doc,
         telefono: data.telefono,
         id_rol: rolesItemSelect?.id,
         correo: data.email,
-        //datos asignacion caja y sucursal
         id_sucursal: sucursalesItemSelect?.id,
         id_caja: cajaSelectItem?.id,
-        //datos credenciales
         email: data.email,
         pass: data.pass,
       };
+
+      // 1. Crear el usuario en Auth + tu tabla
       await insertarUsuario(p);
+
+      // 2. Enviar correo al usuario:
+      const result = await sendUserEmail({
+        email: data.email,
+        nombre: data.nombres,
+        password: data.pass,
+      });
+
+      if (!result.success) {
+        toast.warning("Usuario creado pero el correo no se envió 🚨");
+      } else {
+        toast.success("Correo enviado exitosamente 📩");
+      }
     }
   };
+
   const { isPending, mutate: doInsertar } = useMutation({
     mutationKey: ["insertar usuarios"],
     mutationFn: insertar,
@@ -106,8 +120,10 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
   const manejadorInsertar = (data) => {
     doInsertar(data);
   };
+
   const isLoading = isloadingSucursales || isloadingCajas;
   if (isLoading) return <BarLoader color="#6d6d6d" />;
+
   return (
     <Container>
       {isPending ? (
@@ -115,9 +131,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
       ) : (
         <Form onSubmit={handleSubmit(manejadorInsertar)}>
           <Header>
-            <Title>
-              {accion === "Editar" ? "Editar usuario" : "Registrar usuario"}
-            </Title>
+            <Title>{accion === "Editar" ? "Editar usuario" : "Registrar usuario"}</Title>
             <BtnClose funcion={onClose} />
           </Header>
           <section className="main">
@@ -132,7 +146,8 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     />
                   }
                 >
-                  <input disabled ={accion==="Editar"?true:false}
+                  <input
+                    disabled={accion === "Editar" ? true : false}
                     className="form__field"
                     type="text"
                     {...register("email", {
@@ -153,11 +168,9 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     />
                   }
                 >
-                  <input disabled ={accion==="Editar"?true:false}
+                  <input
+                    disabled={accion === "Editar" ? true : false}
                     className="form__field"
-                    defaultValue={
-                      accion === "Editar" ? dataSelect?.descripcion : ""
-                    }
                     type="password"
                     {...register("pass", {
                       required: true,
@@ -170,11 +183,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
               <article>
                 <InputText
                   icono={
-                    <Icon
-                      icon="icon-park-solid:edit-name"
-                      width="24"
-                      height="24"
-                    />
+                    <Icon icon="icon-park-solid:edit-name" width="24" height="24" />
                   }
                 >
                   <input
@@ -183,19 +192,13 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     {...register("nombres", { required: true })}
                   />
                   <label className="form__label">Nombres</label>
-                  {errors.nombres?.type === "required" && (
-                    <p>Campo requerido</p>
-                  )}
+                  {errors.nombres?.type === "required" && <p>Campo requerido</p>}
                 </InputText>
               </article>
               <article>
                 <InputText
                   icono={
-                    <Icon
-                      icon="solar:document-outline"
-                      width="24"
-                      height="24"
-                    />
+                    <Icon icon="solar:document-outline" width="24" height="24" />
                   }
                 >
                   <input
@@ -204,17 +207,13 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     {...register("nro_doc", { required: true })}
                   />
                   <label className="form__label">Nro. doc</label>
-                  {errors.nrodoc?.type === "required" && <p>Campo requerido</p>}
+                  {errors.nro_doc?.type === "required" && <p>Campo requerido</p>}
                 </InputText>
               </article>
               <article>
                 <InputText
                   icono={
-                    <Icon
-                      icon="solar:document-outline"
-                      width="24"
-                      height="24"
-                    />
+                    <Icon icon="solar:document-outline" width="24" height="24" />
                   }
                 >
                   <input
@@ -222,10 +221,8 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     type="text"
                     {...register("telefono", { required: true })}
                   />
-                  <label className="form__label">Teléfono</label>
-                  {errors.telefono?.type === "required" && (
-                    <p>Campo requerido</p>
-                  )}
+                  <label classClassName="form__label">Teléfono</label>
+                  {errors.telefono?.type === "required" && <p>Campo requerido</p>}
                 </InputText>
               </article>
               <span>Asignación de sucursal</span>
@@ -250,6 +247,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
     </Container>
   );
 }
+
 const Container = styled.div`
   position: fixed;
   top: 0;
@@ -259,13 +257,13 @@ const Container = styled.div`
   z-index: 1000;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Importante para que inicie desde arriba */
-  overflow-y: auto; /* Habilita scroll */
+  align-items: flex-start;
+  overflow-y: auto;
   backdrop-filter: blur(5px);
-  padding: 1rem; /* Espacio en móvil */
+  padding: 1rem;
 `;
 const Form = styled.form`
-   width: 100%;
+  width: 100%;
   max-width: 900px;
   background-color: ${({ theme }) => theme.body};
   padding: 20px;
@@ -300,7 +298,6 @@ const Form = styled.form`
 `;
 const Header = styled.div`
   width: 100%;
-
   display: flex;
   text-align: center;
   justify-content: center;

@@ -1,30 +1,25 @@
 import { v } from "../styles/variables";
-import {
-  AiOutlineHome,
-  AiOutlineSetting,
-} from "react-icons/ai";
 
+// === MENÚ DESPLEGABLE DEL USUARIO ===
 export const DesplegableUser = [
   {
     text: "Mi perfil",
-    icono: <v.iconoUser/>,
+    icono: <v.iconoUser />,
     tipo: "miperfil",
   },
   {
-    text: "Configuracion",
-    icono: <v.iconoSettings/>,
+    text: "Configuración",
+    icono: <v.iconoSettings />,
     tipo: "configuracion",
   },
   {
     text: "Cerrar sesión",
-    icono: <v.iconoCerrarSesion/>,
+    icono: <v.iconoCerrarSesion />,
     tipo: "cerrarsesion",
   },
 ];
 
-
-
-//data SIDEBAR
+// === SIDEBAR PRINCIPAL ===
 export const LinksArray = [
   {
     label: "Home",
@@ -33,127 +28,114 @@ export const LinksArray = [
     permiso: 1,
   },
   {
-    label: "Dashboard",
-    icon: "fluent-emoji-flat:antenna-bars",
-    to: "/dashboard",
+    label: "Productos",
+    icon: "mdi:shopping-outline",
+    to: "/configuracion/productos",
     permiso: 2,
-  },
-  {
-    label: "VENDER",
-    icon: "flat-color-icons:shop",
-    to: "/pos",
-    permiso: 3,
   },
   {
     label: "Inventario",
     icon: "flat-ui:box",
     to: "/inventario",
+    permiso: 3,
+  },
+  {
+    label: "VENDER",
+    icon: "fluent-emoji-flat:shopping-cart",
+    to: "/pos",
     permiso: 4,
   },
 ];
 
-
-  // {
-  //   label: "Reportes",
-  //   icon: "flat-ui:graph",
-  //   to: "/reportes",
-  // },
- 
+// === MENÚ SECUNDARIO (CONFIGURACIÓN / OTROS) ===
 export const SecondarylinksArray = [
+
   {
-    label: "MENU",
+    label: "Configuración",
     icon: "icon-park:setting-two",
     to: "/configuracion",
     color: "#CE82FF",
-    permiso: 5,
+    permiso: 15, // ✅ módulo real de Configuración
   },
   {
     label: "Mi perfil",
     icon: "icon-park:avatar",
     to: "/miperfil",
     color: "#CE82FF",
-    permiso: 6,
+    permiso: 7,
   },
 ];
 
-//temas
+// === TEMAS ===
 export const TemasData = [
   {
     icono: "🌞",
     descripcion: "light",
-   
   },
   {
     icono: "🌚",
     descripcion: "dark",
-    
   },
 ];
 
-//data configuracion
-export const DataModulosConfiguracion =[
+// === CONFIGURACIÓN (Tarjetas del Menú) ===
+export const DataModulosConfiguracion = [
   {
-    title:"Productos",
-    subtitle:"registra tus productos",
-    icono:"https://i.ibb.co/85zJ6yG/caja-del-paquete.png",
-    link:"/configurar/productos",
-   
+    title: "Productos",
+    subtitle: "Registra tus productos",
+    icono: "https://i.ibb.co/85zJ6yG/caja-del-paquete.png",
+    link: "/configurar/productos",
   },
   {
-    title:"Personal",
-    subtitle:"ten el control de tu personal",
-    icono:"https://i.ibb.co/5vgZ0fX/hombre.png",
-    link:"/configurar/usuarios",
-   
+    title: "Personal",
+    subtitle: "Ten el control de tu personal",
+    icono: "https://i.ibb.co/5vgZ0fX/hombre.png",
+    link: "/configurar/usuarios",
   },
+  {
+    title: "Tu empresa",
+    subtitle: "Configura tus opciones básicas",
+    icono: "https://i.ibb.co/x7mHPgm/administracion-de-empresas.png",
+    link: "/configurar/empresa",
+  },
+  {
+    title: "Categoría de productos",
+    subtitle: "Asigna categorías a tus productos",
+    icono: "https://i.ibb.co/VYbMRLZ/categoria.png",
+    link: "/configurar/categorias",
+  },
+  {
+    title: "Marca de productos",
+    subtitle: "Gestiona tus marcas",
+    icono: "https://i.ibb.co/1qsbCRb/piensa-fuera-de-la-caja.png",
+    link: "/configurar/marca",
+  },
+];
 
-  {
-    title:"Tu empresa",
-    subtitle:"configura tus opciones básicas",
-    icono:"https://i.ibb.co/x7mHPgm/administracion-de-empresas.png",
-    link:"/configurar/empresa",
-    
-  },
-  {
-    title:"Categoria de productos",
-    subtitle:"asigna categorias a tus productos",
-    icono:"https://i.ibb.co/VYbMRLZ/categoria.png",
-    link:"/configuracion/categorias",
-    
-  },
-  {
-    title:"Marca de productos",
-    subtitle:"gestiona tus marcas",
-    icono:"https://i.ibb.co/1qsbCRb/piensa-fuera-de-la-caja.png",
-    link:"/configurar/marca",
-   
-  },
-  
-
-]
-//tipo usuario
+// === TIPOS DE USUARIO ===
 export const TipouserData = [
   {
-    descripcion: "empleado",
+    descripcion: "Cajero",
     icono: "🪖",
   },
   {
-    descripcion: "administrador",
+    descripcion: "Admin",
     icono: "👑",
   },
 ];
-//tipodoc
+
+// === TIPOS DE DOCUMENTO ===
 export const TipoDocData = [
   {
-    descripcion: "Dni",
+    descripcion: "DNI",
     icono: "🪖",
   },
   {
     descripcion: "Libreta electoral",
-    icono: "👑",
+    icono: "📘",
   },
   {
     descripcion: "Otros",
-    icono: "👑",
+    icono: "📄",
   },
 ];
