@@ -19,7 +19,7 @@ import { PermisosUser } from "../UsuariosDesign/PermisosUser";
 import { useRolesStore } from "../../../store/RolesStore";
 
 // Import del utilitario para enviar correo
-import { sendUserEmail } from "../../../../api/send-email";
+import { sendUserEmail } from "../../../api/send-email";
 
 export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
   const queryClient = useQueryClient();
@@ -191,7 +191,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     type="text"
                     {...register("nombres", { required: true })}
                   />
-                  <label className="form__label">Nombres</label>
+                  <label className="form__label">Nombre Completo</label>
                   {errors.nombres?.type === "required" && <p>Campo requerido</p>}
                 </InputText>
               </article>
@@ -206,7 +206,7 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     type="number"
                     {...register("nro_doc", { required: true })}
                   />
-                  <label className="form__label">Nro. doc</label>
+                  <label className="form__label">No. DPI</label>
                   {errors.nro_doc?.type === "required" && <p>Campo requerido</p>}
                 </InputText>
               </article>

@@ -53,7 +53,7 @@ export const ListAlmacenes = () => {
   const controladorEliminarAlmacen = (id) => {
     return new Promise((resolve, reject) => {
       Swal.fire({
-        title: "¿Estás seguro(a)(e)?",
+        title: "¿Estás seguro(a)?",
         text: "Una vez eliminado, se eliminaran todas las ventas relacionadas",
         icon: "warning",
         showCancelButton: true,
@@ -77,7 +77,7 @@ export const ListAlmacenes = () => {
   const controladorEliminarSucursal = (id) => {
     return new Promise((resolve, reject) => {
       Swal.fire({
-        title: "¿Estás seguro(a)(e)?",
+        title: "¿Estás seguro(a)?",
         text: "Una vez eliminado, se eliminaran todas las ventas relacionadas",
         icon: "warning",
         showCancelButton: true,
