@@ -55,6 +55,7 @@ export const useUsuariosStore = create((set) => ({
       id_rol: p.id_rol,
       correo: p.email,
       id_auth: data,
+      must_change_password: true,
     });
     await InsertarAsignacionCajaSucursal({
       id_sucursal: p.id_sucursal,

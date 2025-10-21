@@ -136,6 +136,8 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
           </Header>
           <section className="main">
             <section className="area1">
+              
+              {/* EMAIL */}
               <article>
                 <InputText
                   icono={
@@ -151,18 +153,24 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     className="form__field"
                     type="text"
                     {...register("email", {
-                      required: true,
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Correo no válido",
+                      },
                     })}
                   />
-                  <label className="form__label">email</label>
-                  {errors.email?.type === "required" && <p>Campo requerido</p>}
+                  <label className="form__label">Email</label>
+                  {errors.email && <p>{errors.email.message}</p>}
                 </InputText>
               </article>
+
+              {/* CONTRASEÑA */}
               <article>
                 <InputText
                   icono={
                     <Icon
-                      icon="material-symbols-light:stacked-email-outline-rounded"
+                      icon="material-symbols-light:lock-outline"
                       width="24"
                       height="24"
                     />
@@ -173,58 +181,60 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
                     className="form__field"
                     type="password"
                     {...register("pass", {
-                      required: true,
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/,
+                        message: "Debe tener 8+ caracteres, número y símbolo",
+                      },
                     })}
                   />
-                  <label className="form__label">contraseña</label>
-                  {errors.pass?.type === "required" && <p>Campo requerido</p>}
+                  <label className="form__label">Contraseña</label>
+                  {errors.pass && <p>{errors.pass.message}</p>}
                 </InputText>
               </article>
+
+              {/* DPI */}
               <article>
                 <InputText
-                  icono={
-                    <Icon icon="icon-park-solid:edit-name" width="24" height="24" />
-                  }
+                  icono={<Icon icon="solar:document-outline" width="24" height="24" />}
                 >
                   <input
                     className="form__field"
                     type="text"
-                    {...register("nombres", { required: true })}
-                  />
-                  <label className="form__label">Nombre Completo</label>
-                  {errors.nombres?.type === "required" && <p>Campo requerido</p>}
-                </InputText>
-              </article>
-              <article>
-                <InputText
-                  icono={
-                    <Icon icon="solar:document-outline" width="24" height="24" />
-                  }
-                >
-                  <input
-                    className="form__field"
-                    type="number"
-                    {...register("nro_doc", { required: true })}
+                    {...register("nro_doc", {
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^\d{13}$/,
+                        message: "Debe tener 13 dígitos",
+                      },
+                    })}
                   />
                   <label className="form__label">No. DPI</label>
-                  {errors.nro_doc?.type === "required" && <p>Campo requerido</p>}
+                  {errors.nro_doc && <p>{errors.nro_doc.message}</p>}
                 </InputText>
               </article>
+
+              {/* TELÉFONO */}
               <article>
                 <InputText
-                  icono={
-                    <Icon icon="solar:document-outline" width="24" height="24" />
-                  }
+                  icono={<Icon icon="solar:document-outline" width="24" height="24" />}
                 >
                   <input
                     className="form__field"
                     type="text"
-                    {...register("telefono", { required: true })}
+                    {...register("telefono", {
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^\d{8}$/,
+                        message: "Debe tener 8 dígitos",
+                      },
+                    })}
                   />
                   <label className="form__label">Teléfono</label>
-                  {errors.telefono?.type === "required" && <p>Campo requerido</p>}
+                  {errors.telefono && <p>{errors.telefono.message}</p>}
                 </InputText>
               </article>
+
               <span>Asignación de sucursal</span>
               <article className="contentasignacion">
                 <span>Sucursal:</span>

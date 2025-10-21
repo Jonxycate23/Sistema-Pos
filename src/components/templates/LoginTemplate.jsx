@@ -27,7 +27,25 @@ export function LoginTemplate() {
   const { mutate } = useMutation({
     mutationKey: ["iniciar con email"],
     mutationFn: loginEmail,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // 🔍 Verificar si debe cambiar contraseña
+      const response = await fetch(
+        `https://csjldpyuyxlxxkogfalj.supabase.co/rest/v1/usuarios?correo=eq.${data.email}`,
+        {
+          headers: {
+            apikey: "import.meta.env.VITE_APP_SUPABASE_ANON_KEY",
+            Authorization: "import.meta.env.VITE_APP_SUPABASE_ANON_KEY",
+          },
+        }
+      );
+      const usuario = await response.json();
+
+      if (usuario.length > 0 && usuario[0].must_change_password) {
+        window.location.href = "/primer-acceso";
+        return;
+      }
+
+      // 🔹 Roles normales
       if (rol === "dueno" && data.rol !== "superadmin") {
         toast.error("Este usuario no tiene rol de Dueño.");
         return;
@@ -45,6 +63,7 @@ export function LoginTemplate() {
         toast.error("Rol no reconocido.");
       }
     },
+
     onError: (error) => {
       toast.error(`Error: ${error.message}`);
     },
