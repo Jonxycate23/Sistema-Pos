@@ -86,3 +86,60 @@ export const Light = {
     bordercolorDash:"#1f1f1f",
     boxshadow:"0px 10px 15px -3px rgba(0,0,0,0.1)"
   };
+
+
+export const Blue = {
+  ...Light,
+  name: "blue",
+  body: "#0D1B2A",
+  text: "#E0E1DD",
+  bgtotal: "#1B263B",
+  bg3: "#0D1B2A",
+  primary: "#00A6FB",
+  bg6: "rgba(0,166,251,0.3)",
+  color1: "#00A6FB",
+  colorToggle: "#00A6FB",
+  bgtgderecha: "#1B263B",
+};
+
+export const Green = {
+  ...Light,
+  name: "green",
+  body: "#001E00",
+  text: "#E0FFE0",
+  bgtotal: "#002E00",
+  bg3: "#003F00",
+  primary: "#00FF85",
+  bg6: "rgba(0,255,133,0.3)",
+  color1: "#00FF85",
+  colorToggle: "#00FF85",
+  bgtgderecha: "#003F00",
+};
+
+export const Purple = {
+  ...Light,
+  name: "purple",
+  body: "#180028",
+  text: "#F2E7FE",
+  bgtotal: "#2E004F",
+  bg3: "#3C096C",
+  primary: "#C77DFF",
+  bg6: "rgba(199,125,255,0.3)",
+  color1: "#C77DFF",
+  colorToggle: "#C77DFF",
+  bgtgderecha: "#3C096C",
+};
+
+export const Red = {
+  ...Light,
+  name: "red",
+  body: "#2C0000",
+  text: "#FFECEC",
+  bgtotal: "#400000",
+  bg3: "#660000",
+  primary: "#FF4B4B",
+  bg6: "rgba(255,75,75,0.3)",
+  color1: "#FF4B4B",
+  colorToggle: "#FF4B4B",
+  bgtgderecha: "#660000",
+};

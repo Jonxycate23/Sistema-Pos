@@ -68,7 +68,11 @@ const Container = styled.div`
    margin-top:50px;
   justify-content: center;
   width: 100%;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--sidebar-width, 150px);
+  
+
  
   #cards {
     display: flex;

@@ -18,8 +18,6 @@ import { BarLoader } from "react-spinners";
 import { PermisosUser } from "../UsuariosDesign/PermisosUser";
 import { useRolesStore } from "../../../store/RolesStore";
 import { useEffect, useState } from "react";
-
-// Import del utilitario para enviar correo
 import { sendUserEmail } from "../../../api/send-email";
 
 export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
@@ -48,36 +46,51 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
   });
 
   // --- Generar contraseña automática ---
-  const [generatedPassword, setGeneratedPassword] = useState("");
   const generarPassword = () => {
     const chars =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&";
-    return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+    return Array.from({ length: 10 }, () =>
+      chars[Math.floor(Math.random() * chars.length)]
+    ).join("");
   };
 
-  useEffect(() => {
-    if (accion !== "Editar") {
-      setGeneratedPassword(generarPassword());
-    }
-  }, [accion]);
+  // Mostrar/ocultar contraseña (para crear) y nueva contraseña (para editar)
+  const [showPassCrear, setShowPassCrear] = useState(false);
+  const [showPassEditar, setShowPassEditar] = useState(false);
 
-  // --- Configuración del formulario ---
   const {
     register,
     formState: { errors },
     handleSubmit,
+    setValue,
+    watch,
   } = useForm({
     defaultValues: {
       nombres: itemSelect?.usuario || "",
       email: itemSelect?.email || "",
       nro_doc: itemSelect?.nro_doc || "",
       telefono: itemSelect?.telefono || "",
+      pass: "", // contraseña inicial (crear)
+      newPassword: "", // nueva contraseña (editar)
     },
-    mode: "onBlur", // 🔥 Muestra error cuando el usuario sale del campo
+    mode: "onBlur",
   });
 
+  // Generar contraseña al crear nuevo usuario y setear en el form
+  useEffect(() => {
+    if (accion !== "Editar") {
+      const pass = generarPassword();
+      setValue("pass", pass);
+    } else {
+      // al editar, aseguramos newPassword vacío por defecto
+      setValue("newPassword", "");
+    }
+  }, [accion, setValue]);
 
-  // --- Insertar o editar ---
+  // opcional: ver valor actual (útil para debug)
+  const passCrearValue = watch("pass");
+  const passEditarValue = watch("newPassword");
+
   const insertar = async (data) => {
     if (accion === "Editar") {
       const p = {
@@ -87,6 +100,12 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
         telefono: data.telefono,
         id_rol: rolesItemSelect?.id,
       };
+
+      // si el admin escribió una nueva contraseña, se envía
+      if (data.newPassword && data.newPassword.trim() !== "") {
+        p.pass = data.newPassword;
+      }
+
       await editarUsuarios(p);
     } else {
       const p = {
@@ -98,17 +117,15 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
         id_sucursal: sucursalesItemSelect?.id,
         id_caja: cajaSelectItem?.id,
         email: data.email,
-        pass: generatedPassword,
+        pass: data.pass, // puede ser la autogenerada o la que el admin editó
       };
 
-      // 1. Crear usuario en auth + tabla usuarios
       await insertarUsuario(p);
 
-      // 2. Enviar correo con la contraseña generada
       const result = await sendUserEmail({
         email: data.email,
         nombre: data.nombres,
-        password: generatedPassword,
+        password: data.pass,
       });
 
       if (!result.success) {
@@ -139,7 +156,6 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
   const isLoading = isloadingSucursales || isloadingCajas;
   if (isLoading) return <BarLoader color="#6d6d6d" />;
 
-  // --- Render ---
   return (
     <Container>
       {isPending ? (
@@ -147,119 +163,208 @@ export function RegistrarUsuarios({ accion, dataSelect, onClose }) {
       ) : (
         <Form onSubmit={handleSubmit(manejadorInsertar)}>
           <Header>
-            <Title>{accion === "Editar" ? "Editar usuario" : "Registrar usuario"}</Title>
+            <Title>
+              {accion === "Editar" ? "Editar usuario" : "Registrar usuario"}
+            </Title>
             <BtnClose funcion={onClose} />
           </Header>
 
           <section className="main">
             <section className="area1">
+              {/* NOMBRE */}
+              <article>
+                <InputText
+                  icono={<Icon icon="icon-park-solid:edit-name" width="24" height="24" />}
+                >
+                  <input
+                    className="form__field"
+                    type="text"
+                    {...register("nombres", {
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/,
+                        message: "Solo letras y espacios permitidos",
+                      },
+                    })}
+                  />
+                  <label className="form__label">Nombre Completo</label>
+                  {errors.nombres && <p>{errors.nombres.message}</p>}
+                </InputText>
+              </article>
 
-          {/* NOMBRE */}
-          <article>
-            <InputText
-              icono={<Icon icon="icon-park-solid:edit-name" width="24" height="24" />}
-            >
-              <input
-                className="form__field"
-                type="text"
-                {...register("nombres", {
-                  required: "Campo requerido",
-                  pattern: {
-                    value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/,
-                    message: "Solo letras y espacios permitidos",
-                  },
-                })}
-              />
-              <label className="form__label">Nombre Completo</label>
-              {errors.nombres && <p>{errors.nombres.message}</p>}
-            </InputText>
-          </article>
+              {/* DPI */}
+              <article>
+                <InputText
+                  icono={<Icon icon="solar:document-outline" width="24" height="24" />}
+                >
+                  <input
+                    className="form__field"
+                    type="text"
+                    {...register("nro_doc", {
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^\d{13}$/,
+                        message: "Debe tener exactamente 13 dígitos",
+                      },
+                    })}
+                  />
+                  <label className="form__label">No. DPI</label>
+                  {errors.nro_doc && <p>{errors.nro_doc.message}</p>}
+                </InputText>
+              </article>
 
-          {/* DPI */}
-          <article>
-            <InputText
-              icono={<Icon icon="solar:document-outline" width="24" height="24" />}
-            >
-              <input
-                className="form__field"
-                type="text"
-                {...register("nro_doc", {
-                  required: "Campo requerido",
-                  pattern: {
-                    value: /^\d{13}$/,
-                    message: "Debe tener exactamente 13 dígitos",
-                  },
-                })}
-              />
-              <label className="form__label">No. DPI</label>
-              {errors.nro_doc && <p>{errors.nro_doc.message}</p>}
-            </InputText>
-          </article>
+              {/* TELÉFONO */}
+              <article>
+                <InputText
+                  icono={<Icon icon="material-symbols:call-outline" width="24" height="24" />}
+                >
+                  <input
+                    className="form__field"
+                    type="text"
+                    {...register("telefono", {
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^\d{8}$/,
+                        message: "Debe tener 8 dígitos",
+                      },
+                    })}
+                  />
+                  <label className="form__label">Teléfono</label>
+                  {errors.telefono && <p>{errors.telefono.message}</p>}
+                </InputText>
+              </article>
 
-          {/* TELÉFONO */}
-          <article>
-            <InputText
-              icono={<Icon icon="material-symbols:call-outline" width="24" height="24" />}
-            >
-              <input
-                className="form__field"
-                type="text"
-                {...register("telefono", {
-                  required: "Campo requerido",
-                  pattern: {
-                    value: /^\d{8}$/,
-                    message: "Debe tener 8 dígitos",
-                  },
-                })}
-              />
-              <label className="form__label">Teléfono</label>
-              {errors.telefono && <p>{errors.telefono.message}</p>}
-            </InputText>
-          </article>
+              {/* EMAIL */}
+              <article>
+                <InputText
+                  icono={
+                    <Icon
+                      icon="material-symbols-light:stacked-email-outline-rounded"
+                      width="24"
+                      height="24"
+                    />
+                  }
+                >
+                  <input
+                    disabled={accion === "Editar" ? true : false}
+                    className="form__field"
+                    type="text"
+                    {...register("email", {
+                      required: "Campo requerido",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Correo no válido",
+                      },
+                    })}
+                  />
+                  <label className="form__label">Email</label>
+                  {errors.email && <p>{errors.email.message}</p>}
+                </InputText>
+              </article>
 
-          {/* EMAIL */}
-          <article>
-            <InputText
-              icono={
-                <Icon
-                  icon="material-symbols-light:stacked-email-outline-rounded"
-                  width="24"
-                  height="24"
-                />
-              }
-            >
-              <input
-                disabled={accion === "Editar" ? true : false}
-                className="form__field"
-                type="text"
-                {...register("email", {
-                  required: "Campo requerido",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Correo no válido",
-                  },
-                })}
-              />
-              <label className="form__label">Email</label>
-              {errors.email && <p>{errors.email.message}</p>}
-            </InputText>
-          </article>
+              {/* ========== CONTRASEÑA AL CREAR (AUTOGENERADA pero oculta y editable) ========== */}
+              {accion !== "Editar" && (
+                <article>
+                  <InputText
+                    icono={
+                      <Icon
+                        icon="material-symbols:lock-outline"
+                        width="24"
+                        height="24"
+                      />
+                    }
+                  >
+                    <div style={{ position: "relative", width: "100%" }}>
+                      <input
+                        className="form__field"
+                        type={showPassCrear ? "text" : "password"}
+                        {...register("pass", {
+                          required: "La contraseña es requerida",
+                          minLength: {
+                            value: 6,
+                            message: "Mínimo 6 caracteres",
+                          },
+                        })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassCrear(!showPassCrear)}
+                        aria-label={showPassCrear ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                        }}
+                      >
+                        <Icon
+                          icon={showPassCrear ? "mdi:eye-off" : "mdi:eye"}
+                          width="20"
+                          height="20"
+                        />
+                      </button>
+                    </div>
+                    <label className="form__label">Contraseña (editable)</label>
+                    {errors.pass && <p>{errors.pass.message}</p>}
+                  </InputText>
+                </article>
+              )}
 
-          {/* CONTRASEÑA AUTOGENERADA */}
-          <article>
-            <InputText
-              icono={<Icon icon="material-symbols:lock-outline" width="24" height="24" />}
-            >
-              <input
-                disabled
-                className="form__field"
-                type="password"
-                value={generatedPassword}
-              />
-              <label className="form__label">Contraseña generada</label>
-            </InputText>
-          </article>
-
+              {/* ========== NUEVA CONTRASEÑA AL EDITAR (opcional, oculta y editable) ========== */}
+              {accion === "Editar" && (
+                <article>
+                  <InputText
+                    icono={
+                      <Icon
+                        icon="material-symbols:lock-outline"
+                        width="24"
+                        height="24"
+                      />
+                    }
+                  >
+                    <div style={{ position: "relative", width: "100%" }}>
+                      <input
+                        className="form__field"
+                        type={showPassEditar ? "text" : "password"}
+                        {...register("newPassword", {
+                          // opcional: si quieres, puedes validar longitud mínima
+                          minLength: {
+                            value: 6,
+                            message: "Mínimo 6 caracteres",
+                          },
+                        })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassEditar(!showPassEditar)}
+                        aria-label={showPassEditar ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                        }}
+                      >
+                        <Icon
+                          icon={showPassEditar ? "mdi:eye-off" : "mdi:eye"}
+                          width="20"
+                          height="20"
+                        />
+                      </button>
+                    </div>
+                    <label className="form__label">Nueva contraseña (opcional)</label>
+                    {errors.newPassword && <p>{errors.newPassword.message}</p>}
+                  </InputText>
+                </article>
+              )}
 
               <span>Asignación de sucursal</span>
               <article className="contentasignacion">

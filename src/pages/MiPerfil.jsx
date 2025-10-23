@@ -27,7 +27,7 @@ export const MiPerfil = () => {
     <Container>
        <Toaster position="top-right" />
       {isPending ? (
-        <span>guardando...🐖</span>
+        <span>guardando...✔️</span>
       ) : (
         <>
           <Title>Mi Perfil</Title> 

@@ -11,7 +11,7 @@ const TicketPrueba = async (output) => {
     },
 
     {
-      text: "Este documento es una prueba de impresión de la empresa Cosecha Verde .",
+      text: "Este documento es una prueba de impresión del sistema.",
       alignment: "center",
       fontSize: 10,
       margin: [0, 10, 0, 10],
@@ -33,7 +33,7 @@ const TicketPrueba = async (output) => {
       margin: [0, 20, 0, 10],
     },
     {
-      text: "Sistema Punto de Venta Cosecha Verde",
+      text: "Cosecha Verde",
       alignment: "center",
       fontSize: 10,
     },
