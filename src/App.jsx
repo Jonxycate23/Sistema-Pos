@@ -5,12 +5,9 @@ import {
   MyRoutes,
   useThemeStore,
   useUsuariosStore,
-  Light,
-  Dark,
 } from "./index";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   const { themeStyle, setTheme } = useThemeStore();
@@ -18,23 +15,25 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-  if (location.pathname === "/login") {
-    setTheme("light");
-  } else {
-    // Solo setea el tema si no hay tema en localStorage
-    if (!localStorage.getItem("theme")) {
-      setTheme(datausuarios?.tema || "light");
-    }
-  }
-}, [datausuarios, location]);
+    // 1️⃣ Intenta cargar el tema desde localStorage
+    const savedTheme = localStorage.getItem("theme");
 
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (datausuarios?.tema) {
+      // 2️⃣ Si no hay nada en localStorage, usa el tema del usuario
+      setTheme(datausuarios.tema);
+    } else {
+      // 3️⃣ Si no hay nada, usa "light" por defecto
+      setTheme("light");
+    }
+  }, [datausuarios]);
 
   return (
     <ThemeProvider theme={themeStyle}>
       <AuthContextProvider>
         <GlobalStyles />
         <MyRoutes />
-        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
       </AuthContextProvider>
     </ThemeProvider>
   );

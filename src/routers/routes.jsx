@@ -25,6 +25,7 @@ import { ConfiguracionTicket } from "../pages/ConfiguracionTicket";
 import { MiPerfil } from "../pages/MiPerfil";
 import { SerializacionComprobantes } from "../pages/SerializacionComprobantes";
 import { Reportes } from "../pages/Reportes";
+import PrimerAcceso from "../pages/primer-acceso";
 
 export function MyRoutes() {
   return (
@@ -142,6 +143,19 @@ export function MyRoutes() {
           </Layout>
         }
       />
+
+      <Route
+        path="/primer-acceso"
+        element={
+          <Layout>
+            <ProtectedRoute accessBy="authenticated">
+              <PrimerAcceso />
+            </ProtectedRoute>
+          </Layout>
+        }
+      />
+
+
       <Route path="*" element={<PageNot />} />
       <Route
         path="/configuracion/clientes"

@@ -28,7 +28,7 @@ export function Sidebar({ state, setState }) {
     { name: "dark", label: "Oscuro", color: "#3b82f6", icon: "solar:moon-stars-bold-duotone" },
     { name: "blue", label: "Azul", color: "#00A6FB", icon: "solar:waterdrop-bold-duotone" },
     { name: "green", label: "Verde", color: "#00FF85", icon: "solar:leaf-bold-duotone" },
-    { name: "purple", label: "Púrpura", color: "#C77DFF", icon: "solar:sparkle-bold-duotone" },
+    { name: "purple", label: "Púrpura", color: "#C77DFF", icon: "solar:waterdrop-bold-duotone" },
     { name: "red", label: "Rojo", color: "#FF4B4B", icon: "solar:fire-bold-duotone" },
   ];
 
@@ -37,7 +37,7 @@ export function Sidebar({ state, setState }) {
     PRODUCTOS: "mdi:shopping-outline",
     INVENTARIO: "solar:box-bold-duotone",
     VENDER: "solar:cart-large-4-bold-duotone",
-    CONFIGURACIÓN: "solar:settings-bold-duotone",
+    Menu: "solar:settings-bold-duotone",
     "MI PERFIL": "solar:user-circle-bold-duotone",
   };
 

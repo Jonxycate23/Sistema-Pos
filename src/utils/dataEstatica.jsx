@@ -51,7 +51,7 @@ export const LinksArray = [
 export const SecondarylinksArray = [
 
   {
-    label: "Configuración",
+    label: "Menu",
     icon: "icon-park:setting-two",
     to: "/configuracion",
     color: "#CE82FF",

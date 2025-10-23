@@ -1,3 +1,4 @@
+
 import styled from "styled-components";
 import { v } from "../../../styles/variables";
 import {
@@ -36,6 +37,7 @@ export function RegistrarProductos({
 }) {
   if (!state) return;
   //validar checkboxs
+  const { rol } = useAuthStore();
   const [isChecked1, setIsChecked1] = useState(true);
   const [isChecked2, setIsChecked2] = useState(false);
   const [sevendepor, setSevendepor] = useState("UNIDAD");
@@ -519,11 +521,25 @@ export function RegistrarProductos({
               )}
             </section>
 
-            <Btn1
-              icono={<v.iconoguardar />}
-              titulo="Guardar"
-              bgcolor="#F9D70B"
-            />
+            {rol !== "cajero" ? (
+              <Btn1
+                icono={<v.iconoguardar />}
+                titulo={accion === "Editar" ? "Guardar Cambios" : "Guardar"}
+                bgcolor="#F9D70B"
+              />
+            ) : (
+              <p
+                style={{
+                  textAlign: "center",
+                  padding: "10px",
+                  color: "gray",
+                  fontWeight: "600",
+                }}
+              >
+                ⚠️ No tienes permisos para guardar o editar productos.
+              </p>
+            )}
+
           </form>
         </div>
       )}

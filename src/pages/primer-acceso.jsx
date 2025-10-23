@@ -62,7 +62,7 @@ export default function PrimerAcceso() {
       // Redirección según el rol
       if (userData?.rol === "superadmin") window.location.href = "/panel-admin";
       else if (userData?.rol === "empleado") window.location.href = "/panel-cajero";
-      else window.location.href = "/dashboard";
+      else window.location.href = "/miperfil";
 
     } catch (err) {
       toast.error("Error: " + err.message);
