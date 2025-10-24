@@ -10,12 +10,13 @@ export default function RestablecerPassword() {
   const token = searchParams.get("token");
   const { register, handleSubmit } = useForm();
   const [correo, setCorreo] = useState(null);
+  const [loading, setLoading] = useState(true); // 👈 para esperar verificación
 
   useEffect(() => {
     const verificarToken = async () => {
       if (!token) {
-        toast.error("Token no proporcionado");
-        window.location.href = "/login";
+        toast.error("Token no proporcionado ❌");
+        setLoading(false);
         return;
       }
 
@@ -25,25 +26,29 @@ export default function RestablecerPassword() {
         .eq("token", token)
         .single();
 
+      console.log("🔍 Verificando token:", { data, error });
+
       if (error || !data) {
         toast.error("Enlace inválido o expirado");
-        window.location.href = "/login";
+        setLoading(false);
         return;
       }
 
       if (new Date(data.expiracion) < new Date()) {
         toast.error("El enlace ha expirado");
-        window.location.href = "/login";
+        setLoading(false);
         return;
       }
 
       setCorreo(data.correo);
+      setLoading(false);
     };
+
     verificarToken();
   }, [token]);
 
   const onSubmit = async (form) => {
-    if (!correo) return;
+    if (!correo) return toast.error("Token inválido o no asociado");
     const { error } = await supabase.auth.updateUser({
       email: correo,
       password: form.newPassword,
@@ -51,10 +56,29 @@ export default function RestablecerPassword() {
     if (error) return toast.error(error.message);
 
     toast.success("Contraseña restablecida correctamente 🎉");
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 1500);
+    setTimeout(() => (window.location.href = "/login"), 2000);
   };
+
+  if (loading) {
+    return (
+      <Container>
+        <Toaster position="top-center" />
+        <Title>Verificando enlace...</Title>
+      </Container>
+    );
+  }
+
+  if (!correo) {
+    return (
+      <Container>
+        <Toaster position="top-center" />
+        <Title>Enlace inválido o expirado ❌</Title>
+        <Button onClick={() => (window.location.href = "/recuperar-acceso")}>
+          Volver a Recuperar Acceso
+        </Button>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -105,7 +129,6 @@ const Button = styled.button`
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-
   &:hover {
     background-color: #256628;
   }
