@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { supabase } from "../supabase/supabase.config.jsx";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "sonner";
 import styled from "styled-components";
 
 export default function RestablecerPassword() {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
+  const { token } = useParams();
   const { register, handleSubmit } = useForm();
   const [correo, setCorreo] = useState(null);
   const [loading, setLoading] = useState(true); // 👈 para esperar verificación
