@@ -1,10 +1,9 @@
 import { create } from "zustand";
 import { supabase } from "../index";
 
-// ✅ Store único para autenticación y rol de usuario
 export const useAuthStore = create((set) => ({
-  user: null, // información del usuario autenticado
-  rol: null,  // "admin", "cajero", etc.
+  user: null, // datos del usuario autenticado
+  rol: null,  // rol del usuario: "admin", "cajero", etc.
 
   // 🔹 Iniciar sesión con Google
   loginGoogle: async () => {
@@ -34,10 +33,9 @@ export const useAuthStore = create((set) => ({
       }
     }
 
-    // Guarda el usuario autenticado
     set({ user: data.user });
 
-    // Obtiene el rol desde la tabla "usuarios"
+    // Obtiene el rol del usuario desde la BD
     const rol = await obtenerRolUsuario(data.user.id);
     set({ rol });
 
@@ -56,7 +54,7 @@ export const useAuthStore = create((set) => ({
   },
 }));
 
-// 🔸 Función auxiliar para obtener el rol desde la BD
+// 🔸 Función auxiliar para obtener el rol desde la tabla "usuarios"
 async function obtenerRolUsuario(idAuth) {
   const { data, error } = await supabase
     .from("usuarios")

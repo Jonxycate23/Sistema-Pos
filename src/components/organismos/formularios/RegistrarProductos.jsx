@@ -1,5 +1,6 @@
 
 import styled from "styled-components";
+import { useAuthStore } from "../../../store/AuthStore";
 import { v } from "../../../styles/variables";
 import {
   InputText,
@@ -522,12 +523,16 @@ export function RegistrarProductos({
             </section>
 
             {rol !== "cajero" ? (
-              <Btn1
-                icono={<v.iconoguardar />}
-                titulo={accion === "Editar" ? "Guardar Cambios" : "Guardar"}
-                bgcolor="#F9D70B"
-              />
+              <>
+                {/* Botón principal de guardar */}
+                <Btn1
+                  icono={<v.iconoguardar />}
+                  titulo={accion === "Editar" ? "Guardar Cambios" : "Guardar"}
+                  bgcolor="#F9D70B"
+                />
+              </>
             ) : (
+              // Si el usuario es cajero, no mostramos botones de acción
               <p
                 style={{
                   textAlign: "center",

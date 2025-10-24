@@ -26,6 +26,9 @@ import { MiPerfil } from "../pages/MiPerfil";
 import { SerializacionComprobantes } from "../pages/SerializacionComprobantes";
 import { Reportes } from "../pages/Reportes";
 import PrimerAcceso from "../pages/primer-acceso";
+import RecuperarAcceso from "../pages/RecuperarAcceso";
+import RestablecerPassword from "../pages/RestablecerPassword";
+
 
 export function MyRoutes() {
   return (
@@ -37,6 +40,18 @@ export function MyRoutes() {
             <Login />
           </ProtectedRoute>
         }
+      />
+
+      {/* 🔹 NUEVA RUTA PARA RECUPERAR ACCESO */}
+      <Route
+        path="/recuperar-acceso"
+        element={<RecuperarAcceso />}
+      />
+
+      {/* 🔹 RUTA DINÁMICA PARA RESTABLECER (nota: incluye :token) */}
+      <Route
+        path="/restablecerpassword"
+        element={<RestablecerPassword />}
       />
 
       <Route
@@ -226,6 +241,7 @@ export function MyRoutes() {
             </ProtectedRoute>
           </Layout>
         }
+        
       />
       <Route
         path="/configuracion/usuarios"
@@ -248,5 +264,6 @@ export function MyRoutes() {
         }
       />
     </Routes>
+    
   );
 }

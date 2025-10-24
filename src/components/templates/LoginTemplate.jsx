@@ -127,7 +127,7 @@ export function LoginTemplate() {
             {/* Footer */}
             <FooterLinks>
               <FooterText>¿Olvidaste tu contraseña?</FooterText>
-              <RecoveryLink href="#">Recuperar acceso</RecoveryLink>
+              <RecoveryLink href="/recuperar-acceso">Recuperar acceso</RecoveryLink>
             </FooterLinks>
           </FormCard>
         </FormWrapper>
