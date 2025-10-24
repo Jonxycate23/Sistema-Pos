@@ -50,7 +50,7 @@ export function MyRoutes() {
 
       {/* 🔹 RUTA DINÁMICA PARA RESTABLECER (nota: incluye :token) */}
       <Route
-        path="/restablecerpassword"
+        path="/restablecer/:token"
         element={<RestablecerPassword />}
       />
 
